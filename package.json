@@ -1,0 +1,28 @@
+{
+  "name": "simplifyqa-pipeline-executor-v2",
+  "version": "1.0.0",
+  "description": "Connector/Extension to use in conjunction with SimplifyQA Pipelines.",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "concurrently \"npm run clean\" \"npm run tsc\"",
+    "clean": "rimraf dist",
+    "tsc": "tsc",
+    "start:prod": "node dist/index.js"
+  },
+  "author": "SIMPLIFY3X SOFTWARE PRIVATE LIMITED",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "concurrently": "^9.0.1",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "crypto": "^1.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "simplifyqa-pipeline-executor-v2": "file:"
+  }
+}

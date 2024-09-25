@@ -1,0 +1,11 @@
+services:
+  simplifyqa-pipeline-executor:
+    container_name: simplifyqa-pipeline-executor-v2
+    # image: bernardbdas/simplifyqa-pipeline-executor-v2:latest
+    image: simplifyqa-pipeline-executor-v2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - path: .env
+        required: false
