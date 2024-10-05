@@ -27,12 +27,30 @@
   "instanceNameFormat": "Echo $(EXECTOKEN)",
   "inputs": [
     {
-      "name": "EXECTOKEN",
-      "type": "string",
-      "label": "Execution Token:",
+      "name": "PIPELINEID",
+      "type": "int",
+      "label": "Pipeline ID:",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Execution Token from SimplifyQA Pipeline",
+      "helpMarkDown": "Pipeline ID from SimplifyQA Pipeline",
+      "groupName": "inputGroup"
+    },
+    {
+      "name": "PROJECTID",
+      "type": "int",
+      "label": "Project ID:",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Project ID from SimplifyQA",
+      "groupName": "inputGroup"
+    },
+    {
+      "name": "AUTHKEY",
+      "type": "string",
+      "label": "API Key:",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "API Key from SimplifyQA",
       "groupName": "inputGroup"
     },
     {
@@ -53,7 +71,6 @@
       "maximum": 100,
       "required": true,
       "helpMarkDown": "Threshold percentage or fail percentage, when achieved the execution will be killed automatically and marked as failed \n(default: 100%)\n(Ranges from 0.00% to 100.00%)",
-      
       "groupName": "inputGroup"
     },
     {

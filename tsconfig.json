@@ -15,7 +15,7 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ],
       "@/controllers/*": [
         "./controllers/*"
@@ -25,12 +25,22 @@
       ],
       "@/interfaces/*": [
         "./interfaces/*"
-      ]
+      ],
+      "@/utils/*": [
+        "./utils/*"
+      ],
+      "@/services/*": [
+        "./services/*"
+      ],
+      "@/validators/*": [
+        "./validators/*"
+      ],
     }
   },
   "include": [
     "src/**/*",
-    "scripts/**/*"
+    "scripts/**/*",
+    "src/environment.d.ts"
   ],
   "exclude": [
     "node_modules"

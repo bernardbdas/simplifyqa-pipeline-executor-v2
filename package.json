@@ -4,16 +4,16 @@
   "description": "Connector/Extension to use in conjunction with SimplifyQA Pipelines.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "ts-node-dev --respawn --transpile-only -r dotenv/config src/index.ts",
     "build": "concurrently \"npm run clean\" \"npm run tsc\"",
     "clean": "rimraf dist",
     "tsc": "tsc",
-    "start:prod": "node dist/index.js"
+    "start:prod": "node -r dotenv/config dist/index.js"
   },
   "author": "SIMPLIFY3X SOFTWARE PRIVATE LIMITED",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.7.0",
+    "@types/node": "^22.7.4",
     "concurrently": "^9.0.1",
     "rimraf": "^6.0.1",
     "ts-node-dev": "^2.0.0",
@@ -21,8 +21,9 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
-    "crypto": "^1.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "simplifyqa-pipeline-executor-v2": "file:"
+    "azure-pipelines-task-lib": "^4.17.3",
+    "dotenv": "^16.4.5",
+    "winston": "^3.14.2",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }

@@ -1,44 +1,44 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 class ExecutionService {
   constructor() {}
 
+  private static async makeRequest<T>(
+    method: 'post' | 'get' | 'patch',
+    url: string
+  ): Promise<T | null> {
+    try {
+      const response: AxiosResponse<T> = await axios({ method, url });
+      return response.data;
+    } catch (error) {
+      console.error(`Error during API call to ${url}:`, error);
+      return null;
+    }
+  }
+
   static async ExecutionStart(
     projectId: string,
     id: string
-  ): Promise<JSON | null> {
-    try {
-      const response = await axios.post(`/start/${projectId}/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  ): Promise<any | null> {
+    const url = `/start/${projectId}/${id}`;
+    return this.makeRequest('post', url);
   }
 
   static async ExecutionStatus(
     projectId: string,
     execId: string
-  ): Promise<JSON | null> {
-    try {
-      const response = await axios.get(`/status/${projectId}/${execId}`);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  ): Promise<any | null> {
+    const url = `/status/${projectId}/${execId}`;
+    return this.makeRequest('get', url);
   }
 
   static async ExecutionStop(
     projectId: string,
     execId: string
-  ): Promise<JSON | null> {
-    try {
-      const response = await axios.patch(`/stop/${projectId}/${execId}`);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  ): Promise<any | null> {
+    const url = `/stop/${projectId}/${execId}`;
+    return this.makeRequest('patch', url);
   }
 }
+
+export default ExecutionService;
