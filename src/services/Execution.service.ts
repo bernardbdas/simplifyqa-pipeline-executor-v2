@@ -5,10 +5,11 @@ class ExecutionService {
 
   private static async makeRequest<T>(
     method: 'post' | 'get' | 'patch',
-    url: string
+    url: string,
+    headers?: any
   ): Promise<T | null> {
     try {
-      const response: AxiosResponse<T> = await axios({ method, url });
+      const response: AxiosResponse<T> = await axios({ method, headers, url });
       return response.data;
     } catch (error) {
       console.error(`Error during API call to ${url}:`, error);
@@ -16,19 +17,24 @@ class ExecutionService {
     }
   }
 
-  static async ExecutionStart(
-    projectId: string,
-    id: string
-  ): Promise<any | null> {
-    const url = `/start/${projectId}/${id}`;
-    return this.makeRequest('post', url);
+  static async ExecutionStart({
+    apiUrl,
+    apiKey,
+    pipelineId
+  }: {
+    apiUrl: string;
+    apiKey: string;
+    pipelineId: number;
+  }): Promise<any | null> {
+    const url = `${apiUrl}/pl/exec/start/${pipelineId}`;
+    return this.makeRequest('post', url, { Authorization: apiKey });
   }
 
   static async ExecutionStatus(
     projectId: string,
     execId: string
   ): Promise<any | null> {
-    const url = `/status/${projectId}/${execId}`;
+    const url = `/pl/exec/status/${projectId}/${execId}`;
     return this.makeRequest('get', url);
   }
 
@@ -36,7 +42,7 @@ class ExecutionService {
     projectId: string,
     execId: string
   ): Promise<any | null> {
-    const url = `/stop/${projectId}/${execId}`;
+    const url = `/pl/exec/stop/${projectId}/${execId}`;
     return this.makeRequest('patch', url);
   }
 }
