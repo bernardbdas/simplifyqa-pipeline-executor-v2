@@ -4,11 +4,11 @@
   "description": "Connector/Extension to use in conjunction with SimplifyQA Pipelines.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only -r dotenv/config src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only -r dotenv/config src/index.ts",
     "build": "concurrently \"npm run clean\" \"npm run tsc\"",
     "clean": "rimraf dist",
     "tsc": "tsc",
-    "start:prod": "node -r dotenv/config dist/index.js"
+    "start": "node -r dotenv/config dist/index.js"
   },
   "author": "SIMPLIFY3X SOFTWARE PRIVATE LIMITED",
   "license": "ISC",
