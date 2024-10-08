@@ -1,562 +1,638 @@
-import { logger } from '@/utils/logger';
+import { IExecution } from 'interfaces';
+import { Testcase } from 'models';
 
-export const INVALID_EXEC_TOKEN_MSG: string =
-  ' ERR: The EXEC_TOKEN value is invalid';
-export const INVALID_ENV_MSG: string =
-  ' ERR: The APPURL value is invalid. (Resolving to default app url: https://simplifyqa.app)';
-export const INVALID_THRESHOLD_MSG: string =
-  ' ERR: The THRESHOLD value is invalid. (Resolving to default threshold: 100%)';
+export class Execution implements IExecution {
+  _id: string;
+  customerId: number;
+  deleted: boolean;
+  id: number;
+  projectId: number;
+  agentId: string;
+  authkey: string;
+  childExecution: boolean;
+  cloudType: string;
+  code: string;
+  createdAt: string;
+  createdBy: number;
+  environmentType: string;
+  executionCategory: string;
+  executionOS: string;
+  executionStyle: string;
+  executionTime: string;
+  executionType: string;
+  executionTypeCode: string;
+  executionTypeId: number;
+  executionTypeName: string;
+  fromAgent: boolean;
+  globalConfiguration: {};
+  iterationId: number;
+  iterationsSelected: string[];
+  mode: string;
+  moduleId: null | number;
+  parentExecutionId: null | number;
+  releaseId: number;
+  result: string;
+  status: string;
+  tags: null | string[];
+  testcases: Testcase[];
+  type: string;
+  userstoryId: null | number;
 
-export const EXEC_PASS_STATUS_MSG: string = 'Execution Passed!';
-export const EXEC_FAIL_STATUS_MSG: string = 'Execution Failed!';
-export const EXEC_PASS_WITH_WARN_STATUS_MSG: string =
-  'Execution performed successfully with resolved values. Please change the values to avoid future warnings.';
-
-class Execution {
-  // Pre-Execution Data Members
-  private exec_token: string = '';
-  private app_url: string = '';
-  private build_api: string = '/jenkinsSuiteExecution';
-  private status_api: string = '/getJenkinsExecStatus';
-  private kill_api: string = '/getsession/killExecutionReports';
-  private exec_logs_api: string = '/executionlog';
-
-  private env: string = '';
-  private threshold: number = 100;
-  private verbose_flag: boolean = false;
-
-  // These variables are initialized from the internal APIs of SQA
-  private exec_id: number = NaN;
-  private project_id: number = NaN;
-  private customer_id: number = NaN;
-  private user_name: string = '';
-  private user_id: number = NaN;
-  private auth_key: string = '';
-  private retry: boolean = false;
-
-  //Log Maintenance
-  private api_logs: string = '';
-
-  //Post-Execution trigger Data Members
-  private conn_obj!: ConnHandler;
-
-  private trigger_payload!: startExecData;
-  private status_payload!: getExecStatusData;
-  private kill_payload!: killExecData;
-  private request_header: AxiosHeaders = new AxiosHeaders();
-
-  private suite_id: number = 0;
-  private fail_percent: number = 0.0;
-  private exec_percent: number = 0.0;
-  private total_tcs: number = 0;
-  private tcs_inprogress: number = 0;
-  private executed_tcs: number = 0;
-  private tcs_failed: number = 0;
-  private report_url: string = '';
-
-  private exec_status: string = '';
-  private isKilled: boolean = false;
-
-  constructor({
-    exec_token,
-    env,
-    threshold,
-    verbose
-  }: {
-    exec_token: string;
-    env?: string;
-    threshold?: number;
-    verbose?: boolean;
-  }) {
-    this.setExecToken(exec_token);
-
-    if ((env != undefined && env.length > 1) || env === '') {
-      this.setEnv(env);
-    } else logger.info('ERR: Invalid Environment value entered!');
-
-    if (threshold != undefined) this.setThreshold(threshold);
-
-    if (verbose != undefined) this.setVerbose(verbose);
-
-    this.setAppUrl(this.env);
-    this.setBuildApi(this.env + this.build_api);
-    this.setStatusApi(this.env + this.status_api);
-    this.setKillApi(this.env + this.kill_api);
-    this.setExecLogsApi(this.env + this.exec_logs_api);
+  constructor(data: IExecution) {
+    this._id = data._id;
+    this.customerId = data.customerId;
+    this.deleted = data.deleted;
+    this.id = data.id;
+    this.projectId = data.projectId;
+    this.agentId = data.agentId;
+    this.authkey = data.authkey;
+    this.childExecution = data.childExecution;
+    this.cloudType = data.cloudType;
+    this.code = data.code;
+    this.createdAt = data.createdAt;
+    this.createdBy = data.createdBy;
+    this.environmentType = data.environmentType;
+    this.executionCategory = data.executionCategory;
+    this.executionOS = data.executionOS;
+    this.executionStyle = data.executionStyle;
+    this.executionTime = data.executionTime;
+    this.executionType = data.executionType;
+    this.executionTypeCode = data.executionTypeCode;
+    this.executionTypeId = data.executionTypeId;
+    this.executionTypeName = data.executionTypeName;
+    this.fromAgent = data.fromAgent;
+    this.globalConfiguration = data.globalConfiguration;
+    this.iterationId = data.iterationId;
+    this.iterationsSelected = data.iterationsSelected;
+    this.mode = data.mode;
+    this.moduleId = data.moduleId;
+    this.parentExecutionId = data.parentExecutionId;
+    this.releaseId = data.releaseId;
+    this.result = data.result;
+    this.status = data.status;
+    this.tags = data.tags;
+    this.testcases = data.testcases.map((testcase) => new Testcase(testcase));
+    this.type = data.type;
+    this.userstoryId = data.userstoryId;
   }
 
-  //Member Functions
-  protected setExecToken(exec_token: string): void {
-    this.exec_token = exec_token;
-  }
-  public getExecToken(): string {
-    return this.exec_token;
-  }
-
-  protected setAppUrl(app_url: string): void {
-    this.app_url = app_url;
-  }
-  public getAppUrl(): string {
-    return this.app_url;
+  /**
+   * Getter _id
+   * @return {string}
+   */
+  public get_id(): string {
+    return this._id;
   }
 
-  protected setBuildApi(build_api: string): void {
-    this.build_api = build_api;
-  }
-  public getBuildApi(): string {
-    return this.build_api;
-  }
-
-  protected setStatusApi(status_api: string): void {
-    this.status_api = status_api;
-  }
-  public getStatusApi(): string {
-    return this.status_api;
+  /**
+   * Getter customerId
+   * @return {number}
+   */
+  public getCustomerId(): number {
+    return this.customerId;
   }
 
-  protected setKillApi(kill_api: string): void {
-    this.kill_api = kill_api;
-  }
-  public getKillApi(): string {
-    return this.kill_api;
-  }
-
-  protected setExecLogsApi(exec_logs_api: string): void {
-    this.exec_logs_api = exec_logs_api;
-  }
-  public getExecLogsApi(): string {
-    return this.exec_logs_api;
+  /**
+   * Getter deleted
+   * @return {boolean}
+   */
+  public getDeleted(): boolean {
+    return this.deleted;
   }
 
-  protected setEnv(env: string): void {
-    if (env === '') this.env = 'https://simplifyqa.app';
-    else this.env = env;
-  }
-  public getEnv(): string {
-    return this.env;
-  }
-
-  protected setThreshold(threshold: number): void {
-    this.threshold = threshold;
-  }
-  public getThreshold(): number {
-    return this.threshold;
+  /**
+   * Getter id
+   * @return {number}
+   */
+  public getId(): number {
+    return this.id;
   }
 
-  protected setVerbose(verbose_flag: boolean): void {
-    this.verbose_flag = verbose_flag;
-  }
-  public getVerbose(): boolean {
-    return this.verbose_flag;
-  }
-
-  /********************/
-  protected setExecId(exec_id: number): void {
-    this.exec_id = exec_id;
-  }
-  public getExecId(): number {
-    return this.exec_id;
-  }
-
-  protected setProjectId(project_id: number): void {
-    this.project_id = project_id;
-  }
+  /**
+   * Getter projectId
+   * @return {number}
+   */
   public getProjectId(): number {
-    return this.project_id;
+    return this.projectId;
   }
 
-  protected setCustId(customer_id: number): void {
-    this.customer_id = customer_id;
-  }
-  public getCustId(): number {
-    return this.customer_id;
-  }
-
-  protected setUserId(user_id: number): void {
-    this.user_id = user_id;
-  }
-  public getUserId(): number {
-    return this.user_id;
+  /**
+   * Getter agentId
+   * @return {string}
+   */
+  public getAgentId(): string {
+    return this.agentId;
   }
 
-  protected setUserName(user_name: string): void {
-    this.user_name = user_name;
-  }
-  public getUserName(): string {
-    return this.user_name;
-  }
-
-  protected setAuthKey(auth_key: string): void {
-    this.auth_key = auth_key;
-  }
-  public getAuthKey(): string {
-    return this.auth_key;
+  /**
+   * Getter authkey
+   * @return {string}
+   */
+  public getAuthkey(): string {
+    return this.authkey;
   }
 
-  protected setRetry(retry: boolean): void {
-    this.retry = retry;
-  }
-  public getRetry(): boolean {
-    return this.retry;
-  }
-
-  protected setApiLogs(api_logs: string): void {
-    this.api_logs = api_logs;
-  }
-  public getApiLogs(): string {
-    return this.api_logs;
+  /**
+   * Getter childExecution
+   * @return {boolean}
+   */
+  public getChildExecution(): boolean {
+    return this.childExecution;
   }
 
-  protected setReqHeader(): void {
-    this.request_header.set({
-      'Content-Type': 'application/json',
-      Authorization: this.auth_key
-    });
+  /**
+   * Getter cloudType
+   * @return {string}
+   */
+  public getCloudType(): string {
+    return this.cloudType;
   }
 
-  public getReqHeader(): AxiosHeaders {
-    return this.request_header;
+  /**
+   * Getter code
+   * @return {string}
+   */
+  public getCode(): string {
+    return this.code;
   }
 
-  protected setExecPercent(): void {
-    this.exec_percent = (this.executed_tcs / this.total_tcs) * 100;
-    if (isNaN(this.exec_percent)) this.exec_percent = 0.0;
+  /**
+   * Getter createdAt
+   * @return {string}
+   */
+  public getCreatedAt(): string {
+    return this.createdAt;
   }
 
-  public getExecPercent(): number {
-    return this.exec_percent;
+  /**
+   * Getter createdBy
+   * @return {number}
+   */
+  public getCreatedBy(): number {
+    return this.createdBy;
   }
 
-  protected setFailPercent(): void {
-    this.fail_percent = (this.tcs_failed / this.total_tcs) * 100;
-    if (isNaN(this.fail_percent)) this.fail_percent = 0.0;
+  /**
+   * Getter environmentType
+   * @return {string}
+   */
+  public getEnvironmentType(): string {
+    return this.environmentType;
   }
 
-  public getFailPercent(): number {
-    return this.fail_percent;
+  /**
+   * Getter executionCategory
+   * @return {string}
+   */
+  public getExecutionCategory(): string {
+    return this.executionCategory;
   }
 
-  protected setSuiteId(suite_id: number): void {
-    this.suite_id = suite_id;
+  /**
+   * Getter executionOS
+   * @return {string}
+   */
+  public getExecutionOS(): string {
+    return this.executionOS;
   }
 
-  public getSuiteId(): number {
-    return this.suite_id;
+  /**
+   * Getter executionStyle
+   * @return {string}
+   */
+  public getExecutionStyle(): string {
+    return this.executionStyle;
   }
 
-  protected setExecStatus(exec_status: string): void {
-    this.exec_status = exec_status;
+  /**
+   * Getter executionTime
+   * @return {string}
+   */
+  public getExecutionTime(): string {
+    return this.executionTime;
   }
 
-  public getExecStatus(): string {
-    return this.exec_status;
+  /**
+   * Getter executionType
+   * @return {string}
+   */
+  public getExecutionType(): string {
+    return this.executionType;
   }
 
-  protected setIsKilled(isKilled: boolean): void {
-    this.isKilled = isKilled;
+  /**
+   * Getter executionTypeCode
+   * @return {string}
+   */
+  public getExecutionTypeCode(): string {
+    return this.executionTypeCode;
   }
 
-  public getisKilled(): boolean {
-    return this.isKilled;
+  /**
+   * Getter executionTypeId
+   * @return {number}
+   */
+  public getExecutionTypeId(): number {
+    return this.executionTypeId;
   }
 
-  protected setReportUrl(report_url: string): void {
-    this.report_url = report_url;
+  /**
+   * Getter executionTypeName
+   * @return {string}
+   */
+  public getExecutionTypeName(): string {
+    return this.executionTypeName;
   }
 
-  public getReportUrl(): string {
-    return this.report_url;
+  /**
+   * Getter fromAgent
+   * @return {boolean}
+   */
+  public getFromAgent(): boolean {
+    return this.fromAgent;
   }
 
-  protected setTotalTcs(total_tcs: number): void {
-    this.total_tcs = total_tcs;
+  /**
+   * Getter globalConfiguration
+   * @return {{}}
+   */
+  public getGlobalConfiguration(): {} {
+    return this.globalConfiguration;
   }
 
-  public getTotalTcs(): number {
-    return this.total_tcs;
+  /**
+   * Getter iterationId
+   * @return {number}
+   */
+  public getIterationId(): number {
+    return this.iterationId;
   }
 
-  protected setExecutedTcs(executed_tcs: number): void {
-    this.executed_tcs = executed_tcs;
+  /**
+   * Getter iterationsSelected
+   * @return {string[]}
+   */
+  public getIterationsSelected(): string[] {
+    return this.iterationsSelected;
   }
 
-  public getExecutedTcs(): number {
-    return this.executed_tcs;
+  /**
+   * Getter mode
+   * @return {string}
+   */
+  public getMode(): string {
+    return this.mode;
   }
 
-  public getTriggerPayload(): startExecData {
-    return this.trigger_payload;
+  /**
+   * Getter moduleId
+   * @return {number | null}
+   */
+  public getModuleId(): number | null {
+    return this.moduleId;
   }
 
-  public getStatusPayload(): getExecStatusData {
-    return this.status_payload;
+  /**
+   * Getter parentExecutionId
+   * @return {number | null}
+   */
+  public getParentExecutionId(): number | null {
+    return this.parentExecutionId;
   }
 
-  public getKillPayload(): killExecData {
-    return this.kill_payload;
+  /**
+   * Getter releaseId
+   * @return {number}
+   */
+  public getReleaseId(): number {
+    return this.releaseId;
   }
 
-  protected setKillPayload(): void {
-    this.kill_payload = {
-      customerId: this.customer_id,
-      id: this.exec_id,
-      userId: this.user_id,
-      userName: this.user_name
-    };
+  /**
+   * Getter result
+   * @return {string}
+   */
+  public getResult(): string {
+    return this.result;
   }
 
-  public async startExec(): Promise<any> {
-    try {
-      this.conn_obj = new ConnHandler();
-      this.trigger_payload = {
-        token: this.exec_token
-      };
-      this.setReqHeader();
-
-      if (this.verbose_flag) {
-        logger.info(`REQUEST BODY: ${JSON.stringify(this.trigger_payload)}`);
-      }
-
-      const resp: AxiosResponse | AxiosError | Error =
-        await this.conn_obj.makePostRequest({
-          url: this.build_api,
-          data: this.trigger_payload,
-          headers: this.request_header
-        });
-
-      if (axios.isAxiosError(resp)) {
-        if (resp.response) {
-          const status_code = resp.response.status;
-
-          if (this.verbose_flag) {
-            logger.info(`RESPONSE BODY: ${JSON.stringify(resp.response.data)}`);
-          }
-
-          const statusMessages: { [key: number]: string } = {
-            400: 'Invalid Execution token for the specified env: ',
-            403: 'Invalid Execution token for the specified env: ',
-            500: 'The cloud server or the local machine is unavailable for the specified env: ',
-            504: 'The server gateway timed-out for the specified env: '
-          };
-
-          if (status_code >= 400 && status_code < 600) {
-            // Condition for 504 Gateway timed-out
-            // if (status_code === 504) {
-            //   logger.info(
-            //     `EXECUTION STATUS: Status code ${status_code}, Execution did not get triggered. Retrying startExec()`
-            //   );
-            //   this.retry = true;
-            //   return null;
-            // }
-
-            const statusMessage =
-              statusMessages[status_code] || resp.response.statusText;
-            logger.error(
-              `EXECUTION STATUS: Status code ${status_code}, Execution did not get triggered.`
-            );
-            logger.error(
-              `REASON OF FAILURE: ${statusMessages[status_code]} ${this.app_url}`
-            );
-          }
-          return null;
-        } else if (resp.request) {
-          logger.error(
-            `EXECUTION STATUS: No response received. Is the server down?`
-          );
-          return null;
-        } else {
-          logger.error(
-            `EXECUTION STATUS: Something is critically broken on SQA Servers.`
-          );
-          logger.error(`REASON OF FAILURE: ${resp.message}`);
-          return null;
-        }
-      } else {
-        const response_data: any = 'data' in resp ? resp.data : null;
-        if (this.verbose_flag) {
-          logger.info(`RESPONSE BODY: ${JSON.stringify(response_data)}`);
-        }
-        if (response_data === null) {
-          return null;
-        } else if (response_data.success) {
-          this.setExecId(response_data.executionId);
-          this.setAuthKey(response_data.authKey);
-          this.setProjectId(response_data.projectId);
-          this.setCustId(response_data.customerId);
-          return response_data;
-        }
-        return null;
-      }
-    } catch (error: any) {
-      logger.error(`An error occurred: ${error.message}`);
-      return error;
-    }
+  /**
+   * Getter status
+   * @return {string}
+   */
+  public getStatus(): string {
+    return this.status;
   }
 
-  public async checkExecStatus({
-    payload_flag
-  }: {
-    payload_flag: boolean;
-  }): Promise<any> {
-    try {
-      this.conn_obj = new ConnHandler();
-      this.status_payload = {
-        executionId: this.exec_id,
-        customerId: this.customer_id,
-        projectId: this.project_id
-      };
-      this.setReqHeader();
-
-      // if ((this.verbose_flag) && (payload_flag)) {
-      //     logger.info(`REQUEST BODY: ${JSON.stringify(this.status_payload)}`);
-      // }
-
-      const resp: AxiosResponse | AxiosError | Error =
-        await this.conn_obj.makePostRequest({
-          url: this.status_api,
-          data: this.status_payload,
-          headers: this.request_header
-        });
-
-      if (axios.isAxiosError(resp)) {
-        if (resp.response) {
-          const status_code = resp.response.status;
-
-          if (this.verbose_flag && resp.response.data.success && payload_flag) {
-            logger.info(`RESPONSE BODY: ${JSON.stringify(resp.response.data)}`);
-          }
-
-          const statusMessages: { [key: number]: string } = {
-            400: 'Logout and login again, Invalid Execution token for the specified env: ',
-            403: 'Logout and login again, Invalid Authorization token for the specified env: ',
-            500: 'The Pipeline Token is invalid for the specified env: ',
-            504: 'The server gateway timed-out for the specified env: '
-          };
-
-          if (status_code >= 400 && status_code < 600) {
-            const statusMessage =
-              statusMessages[status_code] || resp.response.statusText;
-            //logger.error(`EXECUTION STATUS: Status code ${status_code}, Execution did not get triggered.`);
-            //logger.error(`REASON OF FAILURE: ${statusMessages[status_code]} ${this.app_url}`);
-          }
-          return null;
-        } else if (resp.request) {
-          logger.error(
-            `EXECUTION STATUS: No response received. Is the server down?`
-          );
-          return null;
-        } else {
-          logger.error(
-            `EXECUTION STATUS: Something is critically broken on SQA Servers.`
-          );
-          logger.error(`REASON OF FAILURE: ${resp.message}`);
-          return null;
-        }
-      } else {
-        const response_data: any = 'data' in resp ? resp.data : null;
-
-        if (response_data === null) {
-          return null;
-        } else if (response_data.success) {
-          this.tcs_failed = 0;
-          response_data.data.data.result.forEach((item: { result: string }) => {
-            if (item.result.toUpperCase() === 'FAILED')
-              this.tcs_failed = this.tcs_failed + 1;
-          });
-
-          this.setExecutedTcs(response_data.data.data.result.length);
-          this.setTotalTcs(response_data.data.data.totalTestcases);
-          this.setSuiteId(response_data.data.data.suiteId);
-          this.setReportUrl(response_data.data.data.reporturl);
-          this.setExecStatus(response_data.data.data.execution);
-          this.setIsKilled(response_data.data.data.executionKilled || false);
-          this.setUserId(response_data.data.data.userId);
-          this.setUserName(response_data.data.data.username);
-          this.setFailPercent();
-          this.setExecPercent();
-          this.setKillPayload();
-
-          return response_data;
-        }
-        return null;
-      }
-    } catch (error: any) {
-      logger.error(`An error occurred: ${error.message}`);
-      return error;
-    }
+  /**
+   * Getter tags
+   * @return {string[] | null}
+   */
+  public getTags(): string[] | null {
+    return this.tags;
   }
 
-  public async killExec(): Promise<any> {
-    try {
-      this.conn_obj = new ConnHandler();
-      this.setReqHeader();
+  /**
+   * Getter testcases
+   * @return {Testcase[]}
+   */
+  public getTestcases(): Testcase[] {
+    return this.testcases;
+  }
 
-      if (this.verbose_flag) {
-        logger.info(`REQUEST BODY: ${JSON.stringify(this.kill_payload)}`);
-      }
+  /**
+   * Getter type
+   * @return {string}
+   */
+  public getType(): string {
+    return this.type;
+  }
 
-      const resp: AxiosResponse | AxiosError | Error =
-        await this.conn_obj.makePostRequest({
-          url: this.kill_api,
-          data: this.kill_payload,
-          headers: this.request_header
-        });
+  /**
+   * Getter userstoryId
+   * @return {number | null}
+   */
+  public getUserstoryId(): null | number {
+    return this.userstoryId;
+  }
 
-      if (axios.isAxiosError(resp)) {
-        if (resp.response) {
-          const status_code = resp.response.status;
+  /**
+   * Setter _id
+   * @param {string} value
+   */
+  protected set_id(value: string) {
+    this._id = value;
+  }
 
-          if (this.verbose_flag) {
-            logger.info(`RESPONSE BODY: ${JSON.stringify(resp.response.data)}`);
-          }
+  /**
+   * Setter customerId
+   * @param {number} value
+   */
+  protected setCustomerId(value: number) {
+    this.customerId = value;
+  }
 
-          const statusMessages: { [key: number]: string } = {
-            400: 'Invalid Execution token for the specified env: ',
-            403: 'Invalid Execution token for the specified env: ',
-            500: 'The cloud server or the local machine is unavailable for the specified env: ',
-            504: 'The server gateway timed-out for the specified env: '
-          };
+  /**
+   * Setter deleted
+   * @param {boolean} value
+   */
+  protected setDeleted(value: boolean) {
+    this.deleted = value;
+  }
 
-          if (status_code >= 400 && status_code < 600) {
-            const statusMessage =
-              statusMessages[status_code] || resp.response.statusText;
-            logger.error(
-              `EXECUTION STATUS: Status code ${status_code}, Execution did not kill successfully.`
-            );
-            logger.error(
-              `REASON OF FAILURE: ${statusMessages[status_code]} ${this.app_url}`
-            );
-          }
-          return null;
-        } else if (resp.request) {
-          logger.error(
-            `EXECUTION STATUS: No response received. Is the server down?`
-          );
-          return null;
-        } else {
-          logger.error(
-            `EXECUTION STATUS: Something is critically broken on SQA Servers.`
-          );
-          logger.error(`REASON OF FAILURE: ${resp.message}`);
-          return null;
-        }
-      } else {
-        const response_data: any = 'data' in resp ? resp.data : null;
-        if (this.verbose_flag) {
-          logger.info(`RESPONSE BODY: ${JSON.stringify(response_data)}`);
-        }
-        if (response_data === null) {
-          return null;
-        } else if (response_data.sucess) {
-          return response_data;
-        }
-        return null;
-      }
-    } catch (error: any) {
-      logger.error(`An error occurred: ${error.message}`);
-      return error;
-    }
+  /**
+   * Setter id
+   * @param {number} value
+   */
+  protected setId(value: number) {
+    this.id = value;
+  }
+
+  /**
+   * Setter projectId
+   * @param {number} value
+   */
+  protected setProjectId(value: number) {
+    this.projectId = value;
+  }
+
+  /**
+   * Setter agentId
+   * @param {string} value
+   */
+  protected setAgentId(value: string) {
+    this.agentId = value;
+  }
+
+  /**
+   * Setter authkey
+   * @param {string} value
+   */
+  protected setAuthkey(value: string) {
+    this.authkey = value;
+  }
+
+  /**
+   * Setter childExecution
+   * @param {boolean} value
+   */
+  protected setChildExecution(value: boolean) {
+    this.childExecution = value;
+  }
+
+  /**
+   * Setter cloudType
+   * @param {string} value
+   */
+  protected setCloudType(value: string) {
+    this.cloudType = value;
+  }
+
+  /**
+   * Setter code
+   * @param {string} value
+   */
+  protected setCode(value: string) {
+    this.code = value;
+  }
+
+  /**
+   * Setter createdAt
+   * @param {string} value
+   */
+  protected setCreatedAt(value: string) {
+    this.createdAt = value;
+  }
+
+  /**
+   * Setter createdBy
+   * @param {number} value
+   */
+  protected setCreatedBy(value: number) {
+    this.createdBy = value;
+  }
+
+  /**
+   * Setter environmentType
+   * @param {string} value
+   */
+  protected setEnvironmentType(value: string) {
+    this.environmentType = value;
+  }
+
+  /**
+   * Setter executionCategory
+   * @param {string} value
+   */
+  protected setExecutionCategory(value: string) {
+    this.executionCategory = value;
+  }
+
+  /**
+   * Setter executionOS
+   * @param {string} value
+   */
+  protected setExecutionOS(value: string) {
+    this.executionOS = value;
+  }
+
+  /**
+   * Setter executionStyle
+   * @param {string} value
+   */
+  protected setExecutionStyle(value: string) {
+    this.executionStyle = value;
+  }
+
+  /**
+   * Setter executionTime
+   * @param {string} value
+   */
+  protected setExecutionTime(value: string) {
+    this.executionTime = value;
+  }
+
+  /**
+   * Setter executionType
+   * @param {string} value
+   */
+  protected setExecutionType(value: string) {
+    this.executionType = value;
+  }
+
+  /**
+   * Setter executionTypeCode
+   * @param {string} value
+   */
+  protected setExecutionTypeCode(value: string) {
+    this.executionTypeCode = value;
+  }
+
+  /**
+   * Setter executionTypeId
+   * @param {number} value
+   */
+  protected setExecutionTypeId(value: number) {
+    this.executionTypeId = value;
+  }
+
+  /**
+   * Setter executionTypeName
+   * @param {string} value
+   */
+  protected setExecutionTypeName(value: string) {
+    this.executionTypeName = value;
+  }
+
+  /**
+   * Setter fromAgent
+   * @param {boolean} value
+   */
+  protected setFromAgent(value: boolean) {
+    this.fromAgent = value;
+  }
+
+  /**
+   * Setter globalConfiguration
+   * @param {{}} value
+   */
+  protected setGlobalConfiguration(value: {}) {
+    this.globalConfiguration = value;
+  }
+
+  /**
+   * Setter iterationId
+   * @param {number} value
+   */
+  protected setIterationId(value: number) {
+    this.iterationId = value;
+  }
+
+  /**
+   * Setter iterationsSelected
+   * @param {string[]} value
+   */
+  protected setIterationsSelected(value: string[]) {
+    this.iterationsSelected = value;
+  }
+
+  /**
+   * Setter mode
+   * @param {string} value
+   */
+  protected setMode(value: string) {
+    this.mode = value;
+  }
+
+  /**
+   * Setter moduleId
+   * @param {null } value
+   */
+  protected setModuleId(value: null) {
+    this.moduleId = value;
+  }
+
+  /**
+   * Setter parentExecutionId
+   * @param {null } value
+   */
+  protected setParentExecutionId(value: null) {
+    this.parentExecutionId = value;
+  }
+
+  /**
+   * Setter releaseId
+   * @param {number} value
+   */
+  protected setReleaseId(value: number) {
+    this.releaseId = value;
+  }
+
+  /**
+   * Setter result
+   * @param {string} value
+   */
+  protected setResult(value: string) {
+    this.result = value;
+  }
+
+  /**
+   * Setter status
+   * @param {string} value
+   */
+  protected setStatus(value: string) {
+    this.status = value;
+  }
+
+  /**
+   * Setter tags
+   * @param {null } value
+   */
+  protected setTags(value: null) {
+    this.tags = value;
+  }
+
+  /**
+   * Setter testcases
+   * @param {Testcase[]} value
+   */
+  protected setTestcases(value: Testcase[]) {
+    this.testcases = value;
+  }
+
+  /**
+   * Setter type
+   * @param {string} value
+   */
+  protected setType(value: string) {
+    this.type = value;
+  }
+
+  /**
+   * Setter userstoryId
+   * @param {null } value
+   */
+  protected setUserstoryId(value: null) {
+    this.userstoryId = value;
   }
 }
-
-export default { Execution };

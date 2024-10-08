@@ -1,36 +1,39 @@
-type startExecData = {
-  token: string;
-};
+import { ITestcase } from 'interfaces';
 
-type getExecStatusData = {
-  executionId: number;
+export interface IExecution {
+  _id: string;
   customerId: number;
-  projectId: number;
-};
-
-type killExecData = {
-  customerId: number;
+  deleted: boolean;
   id: number;
-  userId: number;
-  userName: string;
-};
-
-type ExecutionData = {
-  token: string;
-  appurl?: string;
-  threshold?: number;
-  verbose?: boolean;
-};
-
-type HttpResponse = {
-  statusCode: number;
-  body: any;
-};
-
-export type {
-  startExecData,
-  getExecStatusData,
-  killExecData,
-  ExecutionData,
-  HttpResponse
-};
+  projectId: number;
+  agentId: string;
+  authkey: string;
+  childExecution: boolean;
+  cloudType: string;
+  code: string;
+  createdAt: string;
+  createdBy: number;
+  environmentType: string;
+  executionCategory: string;
+  executionOS: string;
+  executionStyle: string;
+  executionTime: string;
+  executionType: string;
+  executionTypeCode: string;
+  executionTypeId: number;
+  executionTypeName: string;
+  fromAgent: boolean;
+  globalConfiguration: {};
+  iterationId: number;
+  iterationsSelected: string[];
+  mode: string;
+  moduleId: null | number;
+  parentExecutionId: null | number;
+  releaseId: number;
+  result: string;
+  status: string;
+  tags: null | string[];
+  testcases: ITestcase[];
+  type: string;
+  userstoryId: null | number;
+}

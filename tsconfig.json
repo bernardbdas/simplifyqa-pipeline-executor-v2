@@ -35,10 +35,14 @@
       "@/validators/*": [
         "./validators/*"
       ],
+      "@/types/*": [
+        "./types/*"
+      ],
     }
   },
   "include": [
     "src/**/*",
+    "src/**/index.ts",
     "scripts/**/*",
     "src/environment.d.ts"
   ],
