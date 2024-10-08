@@ -1,7 +1,7 @@
 import * as task_obj from 'azure-pipelines-task-lib';
-// import Execution from '@/models/Execution.model';
-import { logger } from '@/utils/logger';
-import ExecutionService from './services/Execution.service';
+import { logger } from '@utils/logger';
+import { ExecutionService } from '@services/Execution.service';
+import { Execution } from '@models/Execution.model';
 
 var PIPELINEID: number;
 var APIURL: string;
@@ -26,7 +26,7 @@ async function run() {
   THRESHOLD = parseFloat(task_obj.getInputRequired('THRESHOLD'));
   VERBOSE = task_obj.getBoolInput('VERBOSE', false);
 
-  console.log(
+  let execObj: Execution = new Execution(
     await ExecutionService.ExecutionStart({
       apiUrl: APIURL,
       apiKey: APIKEY,

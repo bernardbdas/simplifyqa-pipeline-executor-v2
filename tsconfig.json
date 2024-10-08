@@ -1,6 +1,12 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+    "require": [
+      "typescript-transform-paths/register"
+    ],
+  },
   "compilerOptions": {
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noEmitOnError": true,
     "removeComments": false,
     "sourceMap": true,
@@ -10,35 +16,47 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "composite": true,
+    "declarationMap": true,
     "rootDir": "./src",
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "@/*": [
-        "./src/*"
+      "@*": [
+        "src/*"
       ],
-      "@/controllers/*": [
-        "./controllers/*"
+      "@controllers/*": [
+        "controllers/*"
       ],
-      "@/models/*": [
-        "./models/*"
+      "@models/*": [
+        "models/*"
       ],
-      "@/interfaces/*": [
-        "./interfaces/*"
+      "@interfaces/*": [
+        "interfaces/*"
       ],
-      "@/utils/*": [
-        "./utils/*"
+      "@utils/*": [
+        "utils/*"
       ],
-      "@/services/*": [
-        "./services/*"
+      "@services/*": [
+        "services/*"
       ],
-      "@/validators/*": [
-        "./validators/*"
+      "@validators/*": [
+        "validators/*"
       ],
-      "@/types/*": [
-        "./types/*"
+      "@types/*": [
+        "types/*"
       ],
-    }
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      },
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      },
+    ],
   },
   "include": [
     "src/**/*",
@@ -47,6 +65,8 @@
     "src/environment.d.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/http",
+    "src/logs"
   ]
 }

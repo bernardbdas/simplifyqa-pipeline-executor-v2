@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-class ExecutionService {
+export class ExecutionService {
   constructor() {}
 
   private static async makeRequest<T>(
@@ -46,5 +46,3 @@ class ExecutionService {
     return this.makeRequest('patch', url);
   }
 }
-
-export default ExecutionService;
