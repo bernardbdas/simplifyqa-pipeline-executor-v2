@@ -36,16 +36,7 @@
       "groupName": "inputGroup"
     },
     {
-      "name": "PROJECTID",
-      "type": "int",
-      "label": "Project ID:",
-      "defaultValue": "",
-      "required": true,
-      "helpMarkDown": "Project ID from SimplifyQA",
-      "groupName": "inputGroup"
-    },
-    {
-      "name": "AUTHKEY",
+      "name": "APIKEY",
       "type": "string",
       "label": "API Key:",
       "defaultValue": "",
@@ -54,9 +45,9 @@
       "groupName": "inputGroup"
     },
     {
-      "name": "APPURL",
+      "name": "APIURL",
       "type": "string",
-      "label": "App Url:",
+      "label": "API URL:",
       "defaultValue": "https://simplifyqa.app",
       "required": true,
       "helpMarkDown": "Environment to which the suite and pipeline belongs \n(default: production-url) \n(Eg: demo, qa, etc.)",
