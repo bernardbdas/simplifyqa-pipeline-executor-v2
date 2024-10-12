@@ -6,8 +6,8 @@
   "scripts": {
     "prepare": "ts-patch install -s",
     "dev": "ts-node --transpile-only -r dotenv/config -r tsconfig-paths/register src/index.ts",
-    "esbuild": "",
-    "build": "concurrently \"npm run clean\" \"npm run tsc && node fix-paths.js\"",
+    "esbuild": "node esbuild.config.mjs",
+    "build": "concurrently \"npm run clean\" \"npm run esbuild\"",
     "clean": "concurrently \"rimraf dist\"",
     "tsc": "tspc",
     "start": "node -r dotenv/config -r tsconfig-paths/register dist/index.js"
@@ -15,10 +15,12 @@
   "author": "SIMPLIFY3X SOFTWARE PRIVATE LIMITED",
   "license": "ISC",
   "devDependencies": {
+    "@esbuild-plugins/tsconfig-paths": "^0.1.2",
     "@types/node": "^22.7.5",
     "@types/q": "^1.5.8",
     "concurrently": "^9.0.1",
     "esbuild": "^0.24.0",
+    "esbuild-plugin-tsconfig-paths": "^1.0.1",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "ts-patch": "^3.2.1",

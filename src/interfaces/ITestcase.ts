@@ -1,4 +1,4 @@
-import { IPlatform } from '@/interfaces/IPlatform';
+import { IPlatform } from '../interfaces/IPlatform';
 
 export interface ITestcase {
   testcaseId: number;

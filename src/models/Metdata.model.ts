@@ -1,5 +1,5 @@
-import { IMetadata } from '@/interfaces/IMetadata';
-import { Execution } from '@/models/Execution.model';
+import { IMetadata } from '../interfaces/IMetadata';
+import { Execution } from '../models/Execution.model';
 
 export class Metadata implements IMetadata {
   threshold: number;

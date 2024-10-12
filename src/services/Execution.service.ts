@@ -1,4 +1,4 @@
-import { Execution } from '@/models/Execution.model';
+import { Execution } from '../models/Execution.model';
 import axios, { AxiosResponse } from 'axios';
 
 export class ExecutionService {

@@ -1,4 +1,4 @@
-import { ITestcase } from '@/interfaces/ITestcase';
+import { ITestcase } from '../interfaces/ITestcase';
 
 export interface IExecution {
   _id: string;

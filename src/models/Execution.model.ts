@@ -1,5 +1,5 @@
-import { IExecution } from '@/interfaces/IExecution';
-import { Testcase } from '@/models/Testcase.model';
+import { IExecution } from '../interfaces/IExecution';
+import { Testcase } from '../models/Testcase.model';
 
 export class Execution implements IExecution {
   _id: string;

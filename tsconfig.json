@@ -2,13 +2,16 @@
   "compilerOptions": {
     "strict": true,
     "module": "commonjs",
-    "target": "ES2020",
+    "target": "ESNext",
     "rootDir": "./src",
     "outDir": "./dist",
     "composite": false,
     "incremental": false,
     "sourceMap": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
     "paths": {
@@ -57,6 +60,7 @@
     "src/environment.d.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }
