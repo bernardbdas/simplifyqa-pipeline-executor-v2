@@ -1,11 +1,11 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      INPUT_PIPELINEID: number;
+      INPUT_PIPELINEID: string;
       INPUT_APIURL: string;
       INPUT_APIKEY: string;
-      INPUT_THRESHOLD: number;
-      INPUT_VERBOSE: boolean;
+      INPUT_THRESHOLD: string;
+      INPUT_VERBOSE: string;
     }
   }
 }

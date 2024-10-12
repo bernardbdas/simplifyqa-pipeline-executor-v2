@@ -1,7 +1,7 @@
 import * as task_obj from 'azure-pipelines-task-lib';
-import { logger } from '@utils/logger';
-import { ExecutionService } from '@services/Execution.service';
-import { Execution } from '@models/Execution.model';
+import { logger } from '@/utils/logger';
+import { ExecutionService } from '@/services/Execution.service';
+import { Execution } from '@/models/Execution.model';
 
 var PIPELINEID: number;
 var APIURL: string;
@@ -33,6 +33,15 @@ async function run() {
       pipelineId: PIPELINEID
     })
   );
+
+  while ('INPROGRESS' === execObj.status.toLocaleUpperCase()) {
+    execObj = await ExecutionService.ExecutionStatus({
+      apiUrl: APIURL,
+      apiKey: APIKEY,
+      projectId: execObj.projectId,
+      execId: execObj.id
+    });
+  }
 }
 
 run();

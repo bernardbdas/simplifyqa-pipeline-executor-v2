@@ -1,5 +1,5 @@
-import { ITestcase } from '@interfaces/ITestcase';
-import { Platform } from '@models/Platform.model';
+import { ITestcase } from '@/interfaces/ITestcase';
+import { Platform } from '@/models/Platform.model';
 
 export class Testcase implements ITestcase {
   testcaseId: number;

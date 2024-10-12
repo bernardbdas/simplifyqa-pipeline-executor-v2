@@ -1,3 +1,4 @@
+import { Execution } from '@/models/Execution.model';
 import axios, { AxiosResponse } from 'axios';
 
 export class ExecutionService {
@@ -30,12 +31,19 @@ export class ExecutionService {
     return this.makeRequest('post', url, { Authorization: apiKey });
   }
 
-  static async ExecutionStatus(
-    projectId: string,
-    execId: string
-  ): Promise<any | null> {
-    const url = `/pl/exec/status/${projectId}/${execId}`;
-    return this.makeRequest('get', url);
+  static async ExecutionStatus({
+    apiUrl,
+    apiKey,
+    projectId,
+    execId
+  }: {
+    apiUrl: string;
+    apiKey: string;
+    projectId: number;
+    execId: number;
+  }): Promise<any | null> {
+    const url = `${apiUrl}/pl/exec/status/${projectId}/${execId}`;
+    return this.makeRequest('get', url, { Authorization: apiKey });
   }
 
   static async ExecutionStop(
