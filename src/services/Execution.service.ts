@@ -1,41 +1,34 @@
 import { Execution } from '../models/Execution.model';
-import axios, { AxiosResponse } from 'axios';
+import { Connection } from '../utils/connection';
 
 export class ExecutionService {
   constructor() {}
 
-  private static async makeRequest<T>(
-    method: 'post' | 'get' | 'patch',
-    url: string,
-    headers?: any
-  ): Promise<T | null> {
-    try {
-      const response: AxiosResponse<T> = await axios({ method, headers, url });
-      return response.data;
-    } catch (error) {
-      console.error(`Error during API call to ${url}:`, error);
-      return null;
-    }
-  }
-
   static async ExecutionStart({
     apiUrl,
     apiKey,
-    pipelineId
+    pipelineId,
   }: {
     apiUrl: string;
     apiKey: string;
     pipelineId: number;
   }): Promise<any | null> {
     const url = `${apiUrl}/pl/exec/start/${pipelineId}`;
-    return this.makeRequest('post', url, { Authorization: apiKey });
+    const response = await Connection.makeRequest('post', url, {
+      Authorization: apiKey,
+    });
+
+    return {
+      data: response ? response.data : null,
+      status: response ? response.status : null,
+    };
   }
 
   static async ExecutionStatus({
     apiUrl,
     apiKey,
     projectId,
-    execId
+    execId,
   }: {
     apiUrl: string;
     apiKey: string;
@@ -43,14 +36,26 @@ export class ExecutionService {
     execId: number;
   }): Promise<any | null> {
     const url = `${apiUrl}/pl/exec/status/${projectId}/${execId}`;
-    return this.makeRequest('get', url, { Authorization: apiKey });
+    const response = await Connection.makeRequest('get', url, {
+      Authorization: apiKey,
+    });
+
+    return {
+      data: response ? response.data : null,
+      status: response ? response.status : null,
+    };
   }
 
   static async ExecutionStop(
     projectId: string,
-    execId: string
+    execId: string,
   ): Promise<any | null> {
     const url = `/pl/exec/stop/${projectId}/${execId}`;
-    return this.makeRequest('patch', url);
+    const response = await Connection.makeRequest('patch', url);
+
+    return {
+      data: response ? response.data : null,
+      status: response ? response.status : null,
+    };
   }
 }

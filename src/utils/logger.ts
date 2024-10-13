@@ -18,7 +18,7 @@ if (!existsSync(logDir)) {
 
 // Define log format
 const logFormat = winston.format.printf(
-  ({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`
+  ({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`,
 );
 
 /*
@@ -28,9 +28,9 @@ const logFormat = winston.format.printf(
 const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({
-      format: 'DD-MMM-YYYY HH:mm:ss'
+      format: 'DD-MMM-YYYY HH:mm:ss',
     }),
-    logFormat
+    logFormat,
   ),
   transports: [
     // debug log setting
@@ -41,7 +41,7 @@ const logger = winston.createLogger({
       filename: `%DATE%.log`,
       maxFiles: 30, // 30 Days saved
       json: false,
-      zippedArchive: true
+      zippedArchive: true,
     }),
     // error log setting
     new winstonDaily({
@@ -52,24 +52,24 @@ const logger = winston.createLogger({
       maxFiles: 30, // 30 Days saved
       handleExceptions: true,
       json: false,
-      zippedArchive: true
-    })
-  ]
+      zippedArchive: true,
+    }),
+  ],
 });
 
 logger.add(
   new winston.transports.Console({
     format: winston.format.combine(
       winston.format.splat(),
-      winston.format.colorize()
-    )
-  })
+      winston.format.colorize(),
+    ),
+  }),
 );
 
 const stream = {
   write: (message: string) => {
     logger.info(message.substring(0, message.lastIndexOf('\n')));
-  }
+  },
 };
 
 export { logger, stream };

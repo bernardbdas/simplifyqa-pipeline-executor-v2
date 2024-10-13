@@ -19,7 +19,7 @@ export class Metadata implements IMetadata {
     threshold,
     verbose,
     isKilled,
-    execObj
+    execObj,
   }: {
     threshold: number;
     verbose: boolean;

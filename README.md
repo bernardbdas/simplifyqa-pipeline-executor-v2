@@ -100,7 +100,6 @@ environment:
   INPUT_APPURL: https://simplifyqa.app
   INPUT_THRESHOLD: 40
   INPUT_VERBOSE: true
-
 ```
 
 ## Docker Compose Configuration
