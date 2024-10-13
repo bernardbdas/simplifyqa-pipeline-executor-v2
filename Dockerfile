@@ -4,7 +4,7 @@ ARG THRESHOLD=100.00
 ARG VERBOSE=false
 
 # Use the official lightweight Node.js image based on Alpine
-FROM node:lts-alpine as simplifyqa-pipeline-executor-v2
+FROM node:lts-alpine AS simplifyqa-pipeline-executor-v2
 
 # Set the working directory
 WORKDIR /app
@@ -19,10 +19,11 @@ RUN npm install
 RUN npm run build
 
 # Specify environment variables (these can be overridden at runtime)
-ENV INPUT_EXEC_TOKEN=${EXEC_TOKEN}
-ENV INPUT_APP_URL=${APP_URL}
+ENV INPUT_PIPELINEID=${PIPELINEID}
+ENV INPUT_APIURL=${APIURL}
+ENV INPUT_APIKEY=${APIKEY}
 ENV INPUT_THRESHOLD=${THRESHOLD}
 ENV INPUT_VERBOSE=${VERBOSE}
 
 # Set the default command to run the application
-ENTRYPOINT ["sh", "-c", "node ./dist/src/index.js"]
+ENTRYPOINT ["sh", "-c", "node -r dotenv/config -r tsconfig-paths/register dist/index.js"]

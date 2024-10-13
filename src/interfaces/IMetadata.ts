@@ -1,4 +1,4 @@
-export interface IMetadata {
+export interface IMetadata<ExecutionMetadataObject = any> {
   threshold: number;
   isKilled: boolean;
   verbose: boolean;

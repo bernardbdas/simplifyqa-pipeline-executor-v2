@@ -1,61 +1,102 @@
 import { Execution } from '../models/Execution.model';
-import { Connection } from '../utils/connection';
-
+import { makeRequest, validateAPICreds, logger } from '../utils';
 export class ExecutionService {
   constructor() {}
 
-  static async ExecutionStart({
-    apiUrl,
-    apiKey,
-    pipelineId,
-  }: {
-    apiUrl: string;
-    apiKey: string;
-    pipelineId: number;
-  }): Promise<any | null> {
-    const url = `${apiUrl}/pl/exec/start/${pipelineId}`;
-    const response = await Connection.makeRequest('post', url, {
-      Authorization: apiKey,
-    });
+  static async ExecutionStart(
+    pipelineId: number,
+    options: { apiUrl?: string; apiKey?: string } = {}
+  ): Promise<any | null> {
+    const {
+      apiUrl = process.env.INPUT_APIURL,
+      apiKey = process.env.INPUT_APIKEY
+    } = options;
 
-    return {
-      data: response ? response.data : null,
-      status: response ? response.status : null,
+    const url = `${apiUrl}/pl/exec/start/${pipelineId}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: apiKey
     };
+
+    try {
+      validateAPICreds({ apiUrl, apiKey });
+      const response = await makeRequest({
+        method: 'post',
+        url,
+        headers,
+        timeout: 5 * 60 * 1000
+      });
+
+      return {
+        data: response ? response.data : null,
+        status: response ? response.status : null
+      };
+    } catch (error: any) {
+      logger.error('Error in starting the pipeline execution:', error.message);
+      return null;
+    }
   }
 
-  static async ExecutionStatus({
-    apiUrl,
-    apiKey,
-    projectId,
-    execId,
-  }: {
-    apiUrl: string;
-    apiKey: string;
-    projectId: number;
-    execId: number;
-  }): Promise<any | null> {
-    const url = `${apiUrl}/pl/exec/status/${projectId}/${execId}`;
-    const response = await Connection.makeRequest('get', url, {
-      Authorization: apiKey,
-    });
+  static async ExecutionStatus(
+    projectId: number,
+    execId: number,
+    options: { apiUrl?: string; apiKey?: string } = {}
+  ): Promise<any | null> {
+    const {
+      apiUrl = process.env.INPUT_APIURL,
+      apiKey = process.env.INPUT_APIKEY
+    } = options;
 
-    return {
-      data: response ? response.data : null,
-      status: response ? response.status : null,
+    const url = `${apiUrl}/pl/exec/status/${projectId}/${execId}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: apiKey
     };
+
+    try {
+      validateAPICreds({ apiUrl, apiKey });
+      const response = await makeRequest({ method: 'get', url, headers });
+
+      return {
+        data: response ? response.data : null,
+        status: response ? response.status : null
+      };
+    } catch (error: any) {
+      logger.error(
+        'Error in fetching the status of the pipeline execution:',
+        error.message
+      );
+      return null;
+    }
   }
 
   static async ExecutionStop(
-    projectId: string,
-    execId: string,
+    projectId: number,
+    execId: number,
+    options: { apiUrl?: string; apiKey?: string } = {}
   ): Promise<any | null> {
-    const url = `/pl/exec/stop/${projectId}/${execId}`;
-    const response = await Connection.makeRequest('patch', url);
+    const {
+      apiUrl = process.env.INPUT_APIURL,
+      apiKey = process.env.INPUT_APIKEY
+    } = options;
 
-    return {
-      data: response ? response.data : null,
-      status: response ? response.status : null,
+    const url = `/pl/exec/stop/${projectId}/${execId}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: apiKey
     };
+
+    try {
+      validateAPICreds({ apiUrl, apiKey });
+      const response = await makeRequest({ method: 'patch', url, headers });
+
+      return {
+        data: response ? response.data : null,
+        status: response ? response.status : null
+      };
+    } catch (error: any) {
+      logger.error('Error in stopping the pipeline execution:', error.message);
+      return { data: null, status: null };
+    }
   }
 }

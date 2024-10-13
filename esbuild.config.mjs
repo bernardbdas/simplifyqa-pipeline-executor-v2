@@ -16,5 +16,5 @@ build({
   minify: false,
   logLevel: 'info',
   tsconfig: resolve('./tsconfig.json'),
-  plugins: [TsconfigPathsPlugin({ tsconfig: resolve('./tsconfig.json') })],
+  plugins: [TsconfigPathsPlugin({ tsconfig: resolve('./tsconfig.json') })]
 }).catch(() => process.exit(1));

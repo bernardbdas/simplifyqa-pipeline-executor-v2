@@ -1,0 +1,44 @@
+import Joi from 'joi';
+
+export const Sprint = Joi.array().items(
+  Joi.object().keys({
+    _id: Joi.string().allow('', null).label('ID'),
+    customerId: Joi.number().integer().allow('', null).label('Customer ID'),
+    deleted: Joi.boolean().allow('', null).label('Deleted'),
+    id: Joi.number().integer().allow('', null).label('Sprint ID'),
+    releaseId: Joi.number().integer().allow('', null).label('Release ID'),
+    actualEffort: Joi.number().allow('', null).label('Actual Effort'),
+    act_eff: Joi.number().allow('', null).label('Actual Effort'),
+    rem_eff: Joi.number().allow('', null).label('Remaining Effort'),
+    est_eff: Joi.number().allow('', null).label('Estimated Effort'),
+    owners: Joi.array().allow('', null).label('Owners'),
+    actualEndDate: Joi.date()
+      .allow(null, '')
+      .allow('', null)
+      .label('Actual End Date'),
+    actualStartDate: Joi.date()
+      .allow(null, '')
+      .allow('', null)
+      .label('Actual Start Date'),
+    code: Joi.string().allow('', null).label('Sprint Code'),
+    createdAt: Joi.date().allow('', null).label('Created At'),
+    createdBy: Joi.number().integer().allow('', null).label('Created By'),
+    customFields: Joi.object().allow('', null).label('Custom Fields'),
+    description: Joi.string()
+      .allow(null, '')
+      .allow('', null)
+      .label('Description'),
+    estimatedEffort: Joi.number().allow('', null).label('Estimated Effort'),
+    name: Joi.string().allow('', null).label('Sprint Name'),
+    ownerIds: Joi.array()
+      .items(Joi.number().integer())
+      .allow('', null)
+      .label('Owner IDs'),
+    plannedEndDate: Joi.date().allow('', null).label('Planned End Date'),
+    plannedStartDate: Joi.date().allow('', null).label('Planned Start Date'),
+    updatedAt: Joi.date().allow('', null).label('Updated At'),
+    updatedBy: Joi.number().integer().allow('', null).label('Updated By'),
+    remainingEffort: Joi.number().allow('', null).label('Remaining Effort'),
+    state: Joi.string().allow('', null).label('State')
+  })
+);

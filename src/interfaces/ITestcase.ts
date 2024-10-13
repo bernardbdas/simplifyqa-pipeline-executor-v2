@@ -1,6 +1,6 @@
 import { IPlatform } from '../interfaces/IPlatform';
 
-export interface ITestcase {
+export interface ITestcase<TestcaseObject = any> {
   testcaseId: number;
   testcaseName: string;
   testcaseDesc: string;

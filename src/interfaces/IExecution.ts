@@ -1,6 +1,6 @@
 import { ITestcase } from '../interfaces/ITestcase';
 
-export interface IExecution {
+export interface IExecution<ExecutionObject = any> {
   _id: string;
   customerId: number;
   deleted: boolean;
